@@ -1,31 +1,95 @@
 import Link from "next/link";
 import { type SanityDocument } from "next-sanity";
-
 import { client } from "@/sanity/client";
 
-const POSTS_QUERY = `*[
-  _type == "post"
+// Get pinned projects (max 3)
+const PINNED_PROJECTS_QUERY = `*[
+  _type == "project"
+  && pinToTopRow == true
   && defined(slug.current)
-]|order(publishedAt desc)[0...12]{_id, title, slug, publishedAt}`;
+]|order(order asc)[0...3]{
+  _id,
+  title,
+  slug,
+  shortDescription,
+  cardBackgroundColor,
+  cardTextColor
+}`;
+
+// Get featured projects (not pinned, but shown on homepage)
+const FEATURED_PROJECTS_QUERY = `*[
+  _type == "project"
+  && showOnHomepage == true
+  && pinToTopRow != true
+  && defined(slug.current)
+]|order(order asc){
+  _id,
+  title,
+  slug,
+  shortDescription,
+  cardBackgroundColor,
+  cardTextColor
+}`;
 
 const options = { next: { revalidate: 30 } };
 
 export default async function IndexPage() {
-  const posts = await client.fetch<SanityDocument[]>(POSTS_QUERY, {}, options);
+  const pinnedProjects = await client.fetch<SanityDocument[]>(
+    PINNED_PROJECTS_QUERY,
+    {},
+    options
+  );
+  const featuredProjects = await client.fetch<SanityDocument[]>(
+    FEATURED_PROJECTS_QUERY,
+    {},
+    options
+  );
 
   return (
-    <main className="container mx-auto min-h-screen max-w-3xl p-8">
-      <h1 className="text-4xl font-bold mb-8">Posts</h1>
-      <ul className="flex flex-col gap-y-4">
-        {posts.map((post) => (
-          <li className="hover:underline" key={post._id}>
-            <Link href={`/${post.slug.current}`}>
-              <h2 className="text-xl font-semibold">{post.title}</h2>
-              <p>{new Date(post.publishedAt).toLocaleDateString()}</p>
-            </Link>
-          </li>
-        ))}
-      </ul>
+    <main className="container mx-auto min-h-screen max-w-7xl p-8">
+      {/* Pinned Projects - Always 3 columns */}
+      {pinnedProjects.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+          {pinnedProjects.map((project) => (
+            <ProjectCard key={project._id} project={project} />
+          ))}
+        </div>
+      )}
+
+      {/* Featured Projects - Responsive grid */}
+      {featuredProjects.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {featuredProjects.map((project) => (
+            <ProjectCard key={project._id} project={project} />
+          ))}
+        </div>
+      )}
+
+      {/* No projects message */}
+      {pinnedProjects.length === 0 && featuredProjects.length === 0 && (
+        <div className="text-center py-20">
+          <p className="text-lg text-foreground/60">No projects to display yet.</p>
+        </div>
+      )}
     </main>
+  );
+}
+
+function ProjectCard({ project }: { project: SanityDocument }) {
+  const backgroundColor = project.cardBackgroundColor || "#FFFFFF";
+  const textColor = project.cardTextColor || "#000000";
+
+  return (
+    <Link href={`/projx/${project.slug.current}`}>
+      <div
+        className="aspect-square p-8 flex flex-col justify-center items-center text-center hover:opacity-90 transition-opacity"
+        style={{ backgroundColor, color: textColor }}
+      >
+        <h2 className="text-2xl font-bold uppercase mb-4">{project.title}</h2>
+        {project.shortDescription && (
+          <p className="text-sm">{project.shortDescription}</p>
+        )}
+      </div>
+    </Link>
   );
 }
