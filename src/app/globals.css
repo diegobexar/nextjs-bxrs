@@ -1,8 +1,27 @@
 @import "tailwindcss";
 
+/* Custom Font - Add your font file path below */
+@font-face {
+  font-family: 'CustomHeader';
+  src: url('/fonts/RaygunRegular.woff2') format('woff2'),
+       url('/fonts/RaygunRegular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Optional: Add bold/italic variants */
+/* @font-face {
+  font-family: 'CustomHeader';
+  src: url('/fonts/YourFontFile-Bold.woff2') format('woff2');
+  font-weight: bold;
+  font-display: swap;
+} */
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --font-header: 'CustomHeader', sans-serif;
 }
 
 @theme inline {
@@ -10,6 +29,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-header: var(--font-header);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -23,4 +43,9 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Custom header styling */
+.header-font {
+  font-family: var(--font-header);
 }

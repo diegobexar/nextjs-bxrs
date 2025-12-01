@@ -1,6 +1,7 @@
 import { type SanityDocument } from "next-sanity";
 import { client } from "@/sanity/client";
 import { BlockRenderer } from "@/components/blocks/BlockRenderer";
+import type { Metadata } from "next";
 
 const SETTINGS_QUERY = `*[_type == "siteSettings"][0]{
   siteTitle,
@@ -11,6 +12,19 @@ const SETTINGS_QUERY = `*[_type == "siteSettings"][0]{
 }`;
 
 const options = { next: { revalidate: 30 } };
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await client.fetch<SanityDocument>(
+    `*[_type == "siteSettings"][0]{siteTitle, siteDescription}`,
+    {},
+    options
+  );
+
+  return {
+    title: settings?.siteTitle ? `${settings.siteTitle} - Info` : "Info",
+    description: settings?.siteDescription || "Information and contact",
+  };
+}
 
 export default async function InfoPage() {
   const settings = await client.fetch<SanityDocument>(
@@ -29,7 +43,7 @@ export default async function InfoPage() {
   }
 
   return (
-    <main className="min-h-screen">
+    <main className="container mx-auto min-h-screen max-w-7xl p-8">
       {settings.infoContent && settings.infoContent.length > 0 ? (
         <BlockRenderer blocks={settings.infoContent} />
       ) : (

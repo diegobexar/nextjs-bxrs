@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { type SanityDocument } from "next-sanity";
 import { client } from "@/sanity/client";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "BXRS - Portfolio",
+  description: "Creative portfolio and projects",
+};
 
 // Get pinned projects (max 3)
 const PINNED_PROJECTS_QUERY = `*[

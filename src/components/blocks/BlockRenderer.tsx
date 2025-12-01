@@ -2,6 +2,7 @@ import { PortableText } from "next-sanity";
 import imageUrlBuilder from "@sanity/image-url";
 import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
 import { client } from "@/sanity/client";
+import Image from "next/image";
 
 const { projectId, dataset } = client.config();
 const urlFor = (source: SanityImageSource) =>
@@ -101,14 +102,18 @@ function ImageBlock({ block }: { block: any }) {
 
   const content = (
     <div
-      className="w-full"
+      className="w-full relative"
       style={{ backgroundColor }}
     >
       {imageUrl && (
-        <img
+        <Image
           src={imageUrl}
           alt={block.caption || ""}
+          width={1200}
+          height={800}
           className="w-full h-auto"
+          sizes="100vw"
+          priority={false}
         />
       )}
       {block.caption && (
