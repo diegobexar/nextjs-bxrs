@@ -18,9 +18,19 @@
   font-display: swap;
 } */
 
-:root {
+/* Light theme (default) */
+.light-theme {
   --background: #ffffff;
   --foreground: #171717;
+}
+
+/* Dark theme */
+.dark-theme {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+}
+
+:root {
   --font-header: 'CustomHeader', sans-serif;
 }
 
@@ -30,13 +40,6 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-header: var(--font-header);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
