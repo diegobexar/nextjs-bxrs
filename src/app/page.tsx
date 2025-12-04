@@ -19,7 +19,8 @@ const PINNED_PROJECTS_QUERY = `*[
   slug,
   shortDescription,
   cardBackgroundColor,
-  cardTextColor
+  cardTextColor,
+  order
 }`;
 
 // Get featured projects (not pinned, but shown on homepage)
@@ -34,7 +35,8 @@ const FEATURED_PROJECTS_QUERY = `*[
   slug,
   shortDescription,
   cardBackgroundColor,
-  cardTextColor
+  cardTextColor,
+  order
 }`;
 
 const options = { next: { revalidate: 30 } };
