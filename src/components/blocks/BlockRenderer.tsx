@@ -134,15 +134,15 @@ function ImageBlock({ block }: { block: any }) {
 }
 
 function TextBlock({ block }: { block: any }) {
-  const fontSize = fontSizeMap[block.fontSize] || "text-base";
-  const fontWeight = fontWeightMap[block.fontWeight] || "font-normal";
-  const textTransform = textTransformMap[block.textTransform] || "";
-  const textAlign = textAlignMap[block.textAlign] || "text-left";
+  const fontSize = block.fontSize && fontSizeMap[block.fontSize] ? fontSizeMap[block.fontSize] : "text-base";
+  const fontWeight = block.fontWeight && fontWeightMap[block.fontWeight] ? fontWeightMap[block.fontWeight] : "font-normal";
+  const textTransform = block.textTransform && textTransformMap[block.textTransform] !== undefined ? textTransformMap[block.textTransform] : "";
+  const textAlign = block.textAlign && textAlignMap[block.textAlign] ? textAlignMap[block.textAlign] : "text-left";
   const backgroundColor = block.backgroundColor || "transparent";
 
   return (
     <div
-      className={`w-full p-8 ${fontSize} ${fontWeight} ${textTransform} ${textAlign}`}
+      className={`w-full p-8 ${fontSize} ${fontWeight} ${textTransform} ${textAlign}`.trim()}
       style={{ backgroundColor }}
     >
       {block.content && <PortableText value={block.content} />}
@@ -172,11 +172,11 @@ function LinkBlock({ block }: { block: any }) {
 }
 
 function HeadingBlock({ block }: { block: any }) {
-  const HeadingTag = block.level || "h2";
-  const fontSize = fontSizeMap[block.fontSize] || "text-2xl";
-  const fontWeight = fontWeightMap[block.fontWeight] || "font-bold";
-  const textTransform = textTransformMap[block.textTransform] || "";
-  const textAlign = textAlignMap[block.textAlign] || "text-left";
+  const HeadingTag = (block.level || "h2") as "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
+  const fontSize = block.fontSize && fontSizeMap[block.fontSize] ? fontSizeMap[block.fontSize] : "text-2xl";
+  const fontWeight = block.fontWeight && fontWeightMap[block.fontWeight] ? fontWeightMap[block.fontWeight] : "font-bold";
+  const textTransform = block.textTransform && textTransformMap[block.textTransform] !== undefined ? textTransformMap[block.textTransform] : "";
+  const textAlign = block.textAlign && textAlignMap[block.textAlign] ? textAlignMap[block.textAlign] : "text-left";
   const backgroundColor = block.backgroundColor || "transparent";
 
   return (
@@ -184,7 +184,7 @@ function HeadingBlock({ block }: { block: any }) {
       className={`w-full p-8 ${textAlign}`}
       style={{ backgroundColor }}
     >
-      <HeadingTag className={`${fontSize} ${fontWeight} ${textTransform}`}>
+      <HeadingTag className={`${fontSize} ${fontWeight} ${textTransform}`.trim()}>
         {block.text}
       </HeadingTag>
     </div>
@@ -192,20 +192,20 @@ function HeadingBlock({ block }: { block: any }) {
 }
 
 function ColorBlock({ block }: { block: any }) {
-  const height = colorBlockHeightMap[block.height] || "h-[200px]";
-  const padding = paddingMap[block.padding] || "p-8";
+  const height = block.height && colorBlockHeightMap[block.height] ? colorBlockHeightMap[block.height] : "h-[200px]";
+  const padding = block.padding && paddingMap[block.padding] ? paddingMap[block.padding] : "p-8";
   const backgroundColor = block.backgroundColor || "#000000";
 
   return (
     <div
-      className={`w-full ${height} ${padding}`}
+      className={`w-full ${height} ${padding}`.trim()}
       style={{ backgroundColor }}
     />
   );
 }
 
 function SpacerBlock({ block }: { block: any }) {
-  const height = spacerHeightMap[block.height] || "h-16";
+  const height = block.height && spacerHeightMap[block.height] ? spacerHeightMap[block.height] : "h-16";
 
-  return <div className={`w-full ${height}`} />;
+  return <div className={`w-full ${height}`.trim()} />;
 }
