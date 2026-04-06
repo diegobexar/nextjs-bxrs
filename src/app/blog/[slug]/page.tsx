@@ -1,18 +1,12 @@
 import { PortableText, type SanityDocument } from "next-sanity";
-import { createImageUrlBuilder } from "@sanity/image-url";
-import type { SanityImageSource } from "@sanity/image-url";
+import { urlFor } from "@/sanity/image";
 import { client } from "@/sanity/client";
 import Link from "next/link";
+import Image from "next/image";
 
 const POST_QUERY = `*[_type == "post" && slug.current == $slug][0]`;
 
-const { projectId, dataset } = client.config();
-const urlFor = (source: SanityImageSource) =>
-  projectId && dataset
-    ? createImageUrlBuilder({ projectId, dataset }).image(source)
-    : null;
-
-const options = { next: { revalidate: 30 } };
+const options = { next: { revalidate: 3600 } };
 
 export default async function PostPage({
   params,
@@ -42,12 +36,12 @@ export default async function PostPage({
         ← Back to blog
       </Link>
       {postImageUrl && (
-        <img
+        <Image
           src={postImageUrl}
           alt={post.title}
           className="aspect-video rounded-xl"
-          width="550"
-          height="310"
+          width={550}
+          height={310}
         />
       )}
       <h1 className="text-4xl font-bold mb-8">{post.title}</h1>

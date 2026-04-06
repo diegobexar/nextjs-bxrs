@@ -1,14 +1,6 @@
 import { PortableText } from "next-sanity";
-import { createImageUrlBuilder } from "@sanity/image-url";
-import type { SanityImageSource } from "@sanity/image-url";
-import { client } from "@/sanity/client";
+import { urlFor } from "@/sanity/image";
 import Image from "next/image";
-
-const { projectId, dataset } = client.config();
-const urlFor = (source: SanityImageSource) =>
-  projectId && dataset
-    ? createImageUrlBuilder({ projectId, dataset }).image(source)
-    : null;
 
 interface BlockRendererProps {
   blocks: any[];
@@ -83,9 +75,13 @@ const alignMap: Record<string, string> = {
   right: "ml-auto",
 };
 
+function resolve(map: Record<string, string>, value: string | undefined, fallback: string): string {
+  return (value && map[value]) ?? fallback;
+}
+
 function getLayoutClasses(block: any, defaultMaxWidth: string, defaultAlign: string = "center") {
-  const maxWidth = block.maxWidth && maxWidthMap[block.maxWidth] ? maxWidthMap[block.maxWidth] : maxWidthMap[defaultMaxWidth];
-  const align = block.alignment && alignMap[block.alignment] ? alignMap[block.alignment] : alignMap[defaultAlign];
+  const maxWidth = resolve(maxWidthMap, block.maxWidth, maxWidthMap[defaultMaxWidth]);
+  const align = resolve(alignMap, block.alignment, alignMap[defaultAlign]);
   return `${maxWidth} ${align}`;
 }
 
@@ -156,10 +152,10 @@ function ImageBlock({ block }: { block: any }) {
 }
 
 function TextBlock({ block }: { block: any }) {
-  const fontSize = block.fontSize && fontSizeMap[block.fontSize] ? fontSizeMap[block.fontSize] : "text-base";
-  const fontWeight = block.fontWeight && fontWeightMap[block.fontWeight] ? fontWeightMap[block.fontWeight] : "font-normal";
-  const textTransform = block.textTransform && textTransformMap[block.textTransform] !== undefined ? textTransformMap[block.textTransform] : "";
-  const textAlign = block.textAlign && textAlignMap[block.textAlign] ? textAlignMap[block.textAlign] : "text-left";
+  const fontSize = resolve(fontSizeMap, block.fontSize, "text-base");
+  const fontWeight = resolve(fontWeightMap, block.fontWeight, "font-normal");
+  const textTransform = resolve(textTransformMap, block.textTransform, "");
+  const textAlign = resolve(textAlignMap, block.textAlign, "text-left");
   const backgroundColor = block.backgroundColor || "transparent";
 
   const layout = getLayoutClasses(block, "3xl");
@@ -199,10 +195,10 @@ function LinkBlock({ block }: { block: any }) {
 
 function HeadingBlock({ block }: { block: any }) {
   const HeadingTag = (block.level || "h2") as "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
-  const fontSize = block.fontSize && fontSizeMap[block.fontSize] ? fontSizeMap[block.fontSize] : "text-2xl";
-  const fontWeight = block.fontWeight && fontWeightMap[block.fontWeight] ? fontWeightMap[block.fontWeight] : "font-bold";
-  const textTransform = block.textTransform && textTransformMap[block.textTransform] !== undefined ? textTransformMap[block.textTransform] : "";
-  const textAlign = block.textAlign && textAlignMap[block.textAlign] ? textAlignMap[block.textAlign] : "text-left";
+  const fontSize = resolve(fontSizeMap, block.fontSize, "text-2xl");
+  const fontWeight = resolve(fontWeightMap, block.fontWeight, "font-bold");
+  const textTransform = resolve(textTransformMap, block.textTransform, "");
+  const textAlign = resolve(textAlignMap, block.textAlign, "text-left");
   const backgroundColor = block.backgroundColor || "transparent";
 
   const layout = getLayoutClasses(block, "7xl");
@@ -220,8 +216,8 @@ function HeadingBlock({ block }: { block: any }) {
 }
 
 function ColorBlock({ block }: { block: any }) {
-  const height = block.height && colorBlockHeightMap[block.height] ? colorBlockHeightMap[block.height] : "h-[200px]";
-  const padding = block.padding && paddingMap[block.padding] ? paddingMap[block.padding] : "p-8";
+  const height = resolve(colorBlockHeightMap, block.height, "h-[200px]");
+  const padding = resolve(paddingMap, block.padding, "p-8");
   const backgroundColor = block.backgroundColor || "#000000";
 
   const layout = getLayoutClasses(block, "full");
@@ -235,7 +231,7 @@ function ColorBlock({ block }: { block: any }) {
 }
 
 function SpacerBlock({ block }: { block: any }) {
-  const height = block.height && spacerHeightMap[block.height] ? spacerHeightMap[block.height] : "h-16";
+  const height = resolve(spacerHeightMap, block.height, "h-16");
 
   const layout = getLayoutClasses(block, "full");
 

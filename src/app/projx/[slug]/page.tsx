@@ -3,8 +3,7 @@ import { client } from "@/sanity/client";
 import Link from "next/link";
 import { BlockRenderer } from "@/components/blocks/BlockRenderer";
 import type { Metadata } from "next";
-import { createImageUrlBuilder } from "@sanity/image-url";
-import type { SanityImageSource } from "@sanity/image-url";
+import { urlFor } from "@/sanity/image";
 
 const PROJECT_QUERY = `*[_type == "project" && slug.current == $slug][0]{
   ...,
@@ -16,13 +15,7 @@ const PROJECT_QUERY = `*[_type == "project" && slug.current == $slug][0]{
   }
 }`;
 
-const options = { next: { revalidate: 30 } };
-
-const { projectId, dataset } = client.config();
-const urlFor = (source: SanityImageSource) =>
-  projectId && dataset
-    ? createImageUrlBuilder({ projectId, dataset }).image(source)
-    : null;
+const options = { next: { revalidate: 3600 } };
 
 export async function generateMetadata({
   params,
