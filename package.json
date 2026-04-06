@@ -6,25 +6,32 @@
     "dev": "next dev -p 8888 --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "studio:dev": "cd studio && npx sanity dev",
+    "studio:build": "cd studio && npx sanity build",
+    "studio:deploy": "cd studio && npx sanity deploy"
   },
   "dependencies": {
-    "@sanity/image-url": "^1.1.0",
-    "@tailwindcss/typography": "^0.5.16",
-    "next": "15.5.0",
-    "next-sanity": "^10.0.14",
-    "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "@sanity/image-url": "^2.1.1",
+    "@sanity/vision": "^5.19.0",
+    "@tailwindcss/typography": "^0.5.19",
+    "next": "16.2.2",
+    "next-sanity": "^12.2.1",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "sanity": "^5.19.0",
+    "styled-components": "^6.3.12"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@sanity/eslint-config-studio": "^6.0.0",
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@types/node": "^25",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "15.5.0",
+    "eslint-config-next": "16.2.2",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^6"
   }
 }

@@ -1,0 +1,6 @@
+export {imageBlock} from './imageBlock'
+export {textBlock} from './textBlock'
+export {linkBlock} from './linkBlock'
+export {headingBlock} from './headingBlock'
+export {colorBlock} from './colorBlock'
+export {spacerBlock} from './spacerBlock'

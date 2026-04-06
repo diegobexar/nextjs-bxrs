@@ -1,13 +1,13 @@
 import { PortableText } from "next-sanity";
-import imageUrlBuilder from "@sanity/image-url";
-import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
+import { createImageUrlBuilder } from "@sanity/image-url";
+import type { SanityImageSource } from "@sanity/image-url";
 import { client } from "@/sanity/client";
 import Image from "next/image";
 
 const { projectId, dataset } = client.config();
 const urlFor = (source: SanityImageSource) =>
   projectId && dataset
-    ? imageUrlBuilder({ projectId, dataset }).image(source)
+    ? createImageUrlBuilder({ projectId, dataset }).image(source)
     : null;
 
 interface BlockRendererProps {
@@ -69,11 +69,31 @@ const paddingMap: Record<string, string> = {
   lg: "p-12",
 };
 
+const maxWidthMap: Record<string, string> = {
+  full: "max-w-full",
+  "7xl": "max-w-7xl",
+  "5xl": "max-w-5xl",
+  "3xl": "max-w-3xl",
+  xl: "max-w-xl",
+};
+
+const alignMap: Record<string, string> = {
+  left: "mr-auto",
+  center: "mx-auto",
+  right: "ml-auto",
+};
+
+function getLayoutClasses(block: any, defaultMaxWidth: string, defaultAlign: string = "center") {
+  const maxWidth = block.maxWidth && maxWidthMap[block.maxWidth] ? maxWidthMap[block.maxWidth] : maxWidthMap[defaultMaxWidth];
+  const align = block.alignment && alignMap[block.alignment] ? alignMap[block.alignment] : alignMap[defaultAlign];
+  return `${maxWidth} ${align}`;
+}
+
 export function BlockRenderer({ blocks }: BlockRendererProps) {
   if (!blocks || blocks.length === 0) return null;
 
   return (
-    <div className="flex flex-col gap-0">
+    <div className="flex flex-col gap-0 w-full">
       {blocks.map((block, index) => {
         switch (block._type) {
           case "imageBlock":
@@ -100,9 +120,11 @@ function ImageBlock({ block }: { block: any }) {
   const imageUrl = block.image ? urlFor(block.image)?.url() : null;
   const backgroundColor = block.backgroundColor || "transparent";
 
+  const layout = getLayoutClasses(block, "full");
+
   const content = (
     <div
-      className="w-full relative"
+      className={`w-full relative ${layout}`}
       style={{ backgroundColor }}
     >
       {imageUrl && (
@@ -140,9 +162,11 @@ function TextBlock({ block }: { block: any }) {
   const textAlign = block.textAlign && textAlignMap[block.textAlign] ? textAlignMap[block.textAlign] : "text-left";
   const backgroundColor = block.backgroundColor || "transparent";
 
+  const layout = getLayoutClasses(block, "3xl");
+
   return (
     <div
-      className={`w-full p-8 ${fontSize} ${fontWeight} ${textTransform} ${textAlign}`.trim()}
+      className={`w-full p-8 ${fontSize} ${fontWeight} ${textTransform} ${textAlign} ${layout}`.trim()}
       style={{ backgroundColor }}
     >
       {block.content && <PortableText value={block.content} />}
@@ -153,9 +177,11 @@ function TextBlock({ block }: { block: any }) {
 function LinkBlock({ block }: { block: any }) {
   const backgroundColor = block.backgroundColor || "transparent";
 
+  const layout = getLayoutClasses(block, "3xl");
+
   return (
     <div
-      className="w-full p-8 hover:opacity-90 transition-opacity"
+      className={`w-full p-8 hover:opacity-90 transition-opacity ${layout}`}
       style={{ backgroundColor }}
     >
       <a
@@ -179,9 +205,11 @@ function HeadingBlock({ block }: { block: any }) {
   const textAlign = block.textAlign && textAlignMap[block.textAlign] ? textAlignMap[block.textAlign] : "text-left";
   const backgroundColor = block.backgroundColor || "transparent";
 
+  const layout = getLayoutClasses(block, "7xl");
+
   return (
     <div
-      className={`w-full p-8 ${textAlign}`}
+      className={`w-full p-8 ${textAlign} ${layout}`}
       style={{ backgroundColor }}
     >
       <HeadingTag className={`${fontSize} ${fontWeight} ${textTransform}`.trim()}>
@@ -196,9 +224,11 @@ function ColorBlock({ block }: { block: any }) {
   const padding = block.padding && paddingMap[block.padding] ? paddingMap[block.padding] : "p-8";
   const backgroundColor = block.backgroundColor || "#000000";
 
+  const layout = getLayoutClasses(block, "full");
+
   return (
     <div
-      className={`w-full ${height} ${padding}`.trim()}
+      className={`w-full ${height} ${padding} ${layout}`.trim()}
       style={{ backgroundColor }}
     />
   );
@@ -207,5 +237,7 @@ function ColorBlock({ block }: { block: any }) {
 function SpacerBlock({ block }: { block: any }) {
   const height = block.height && spacerHeightMap[block.height] ? spacerHeightMap[block.height] : "h-16";
 
-  return <div className={`w-full ${height}`.trim()} />;
+  const layout = getLayoutClasses(block, "full");
+
+  return <div className={`w-full ${height} ${layout}`.trim()} />;
 }
